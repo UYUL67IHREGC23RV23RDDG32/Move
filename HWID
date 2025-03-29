@@ -1,0 +1,28 @@
+local data = [[
+28FCAF94-FA95-4DD8-ABB6-4217B2DF5636
+]]
+
+local function getHWID()
+    local cmd = "wmic csproduct get uuid"
+    local handle = io.popen(cmd)
+    local result = handle:read("*a")
+    handle:close()
+    local hwid = result:match("(%w+-%w+-%w+-%w+-%w+)")
+    return hwid
+end
+
+local result = getHWID()
+local found = false
+
+for account in data:gmatch("[^\n]+") do
+    if account == result then
+        found = true
+        break
+    end
+end
+
+if not found then
+    return error('Your HWID is not registed!')
+else
+    print('Your HWID is registed, running script')
+end
