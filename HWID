@@ -1,4 +1,4 @@
-local data = [[]]
+local data = [[0F5A59E3-A363-4603-B8E8-A965B61477A2]]
 
 local function getHWID()
     local cmd = "wmic csproduct get uuid"
