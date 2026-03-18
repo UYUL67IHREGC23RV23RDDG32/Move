@@ -1,13 +1,30 @@
-local data = [[669A900B-CB57-44FD-814F-D73059196D1B
+local data = [[0F5A59E3-A363-4603-B8E8-A965B61477A2
 ]]
 
 local function getHWID()
-    local cmd = "wmic csproduct get uuid"
-    local handle = io.popen(cmd)
-    local result = handle:read("*a")
-    handle:close()
-    local hwid = result:match("(%w+-%w+-%w+-%w+-%w+)")
-    return hwid
+    local sources = {
+        'chcp 65001 > nul && wmic csproduct get uuid',
+        'chcp 65001 > nul && wmic baseboard get serialnumber',
+        'chcp 65001 > nul && wmic bios get serialnumber',
+        'chcp 65001 > nul && wmic diskdrive get serialnumber',
+    }
+
+    for _, cmd in ipairs(sources) do
+        local handle = io.popen(cmd)
+        if handle then
+            local result = handle:read("*a")
+            handle:close()
+            local hwid = result:match("([%w%-]+)%s*$")
+            if hwid and hwid ~= ''
+                and hwid:lower() ~= 'serialnumber'
+                and hwid:lower() ~= 'uuid'
+                and #hwid > 5 then
+                return hwid
+            end
+        end
+    end
+
+    return nil
 end
 
 local result = getHWID()
